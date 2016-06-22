@@ -1,0 +1,9 @@
+# Daily backup 1 AM
+0 1 * * * root /usr/local/sbin/rsnapshot-tools_backup_all daily
+# Weekly backup 2 AM on mondays
+0 2 * * 1 root /usr/local/sbin/rsnapshot-tools_backup_all weekly
+# Montly backup 3 AM on first day of the month
+0 3 1 * * root /usr/local/sbin/rsnapshot-tools_backup_all monthly
+# monday morning backup
+0 5 * * 1 root /usr/local/sbin/rsnapshot-tools_report_all
+#

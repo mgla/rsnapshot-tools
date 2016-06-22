@@ -1,0 +1,44 @@
+#!/usr/bin/perl
+# Collates log files created by rsnapshot-tools_report_all and sends it via E-Mail.
+# Uses local server configuration and the "mail" program.
+#
+# Contact: Maik Glatki <maik.glatki@gmail.com>
+
+use strict;
+use warnings;
+
+require File::Spec;
+require JSON;
+
+use constant {
+    LOGPATH  => '/var/log/rsnapshot.reports',
+    CONFPATH => '/etc/rsnapshot',
+    MAIL     => 'backupwatcher@example.org'
+};
+
+# Read configuration:
+my @backups = ();
+{
+    my $jsonfn = File::Spec->catfile(CONFPATH, 'config.json');
+    open my $fh, '<', $jsonfn;
+    local $/ = undef;
+    my $json = JSON::decode_json(<$fh>) or die "Could not decode $jsonfn\n";
+    close $fh;
+    my $backups = $json->{backup};
+    @backups = @$backups;
+}
+
+for my $config (@backups) {
+    my $configfile = File::Spec->catfile(CONFPATH,  sprintf('%s.conf', $config));
+    my $logfile    = File::Spec->catfile(LOGPATH,   sprintf('%s', $config));
+    if (! -f $configfile) {
+        print STDERR "File $configfile\n does not exist. Host SKIPPED!\n";
+        next;
+    }
+    # Send logfile via Email
+    my $cmd = sprintf('cat %s | mail -s "Backup report: %s" %s', $logfile, $config, MAIL);
+    system($cmd);
+    # Clean logfile
+    $cmd = sprintf('echo "Weekly backup report for %s:\n" > %s', $config, $logfile);
+    system($cmd);
+}

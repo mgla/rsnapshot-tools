@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+# Backups all hosts defined in CONFPATH/config.json
+# Defaults to /etc/rsnapshot/config.json
+# Each hosts needs its own .conf file.
+#
+# Logs errors to LOGPATH/$hostname.log
+# Defaults to LOGPATH/$hostname.log
+#
+# Contact: Maik Glatki <maik.glatki@gmail.com>
+
+use strict;
+use warnings;
+
+require File::Spec;
+require JSON;
+
+use constant {
+    LOGPATH  => '/var/log/rsnapshot.reports',
+    CONFPATH => '/etc/rsnapshot'
+};
+
+my $interval = shift;
+if (!$interval || $interval !~ m/^(hourly|daily|weekly|monthly)$/) {
+    die("Parameter must be in /^(hourly|daily|weekly|monthly)\$/. Exit.\n");
+}
+
+# Read configuration:
+my @backups = ();
+{
+    my $jsonfn = File::Spec->catfile(CONFPATH, 'config.json');
+    open my $fh, '<', $jsonfn;
+    local $/ = undef;
+    my $json = JSON::decode_json(<$fh>) or die "Could not decode $jsonfn\n";
+    close $fh;
+    my $backups = $json->{backup};
+    @backups = @$backups;
+}
+
+for my $config (@backups) {
+    my $configfile = File::Spec->catfile(CONFPATH,  sprintf('%s.conf', $config));
+    my $logfile    = File::Spec->catfile(LOGPATH,   sprintf('%s', $config));
+    if (! -f $configfile) {
+        print STDERR "File $configfile\n does not exist. Host SKIPPED!\n";
+        next;
+    }
+    # Check config file for interval
+    my $cmd = sprintf("grep -q '^[[:space:]]*retain[[:space:]]\\+%s' %s", $interval, $configfile);
+    if (system($cmd) != 0) {
+        # Could not found interval $interval in $configfile
+        next;
+    }
+    # Write date to log file.
+    system(sprintf('date >> %s', $logfile));
+    # Execute rsnapshot backup, append to log file
+    system(sprintf('rsnapshot -vc %s %s 2>&1  >> %s', $configfile, $interval, $logfile));
+}
