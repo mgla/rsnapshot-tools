@@ -5,6 +5,8 @@ Some tooling for a centralized rsnapshot structure.
 
 Rsnapshot is very nice, but you have to check your backups manually, which is tiresome. Also, it does not scale very easy with the number of hosts. These rsnapshot-tools try to alleviate some of this problems.
 
+This solution probably won't scale to an arbitrary size, but if you just want a few dozen hosts in your backup, this might just be your solution.
+
 ## Installation
 
 Copy content of script directory to /usr/local/sbin, example:
