@@ -16,7 +16,7 @@ require JSON;
 
 use constant {
     LOGPATH  => '/var/log/rsnapshot.reports',
-    CONFPATH => '/etc/rsnapshot'
+    CONFPATH => '/etc/rsnapshot-tools'
 };
 
 my $interval = shift;
