@@ -6,7 +6,7 @@
 # Logs errors to LOGPATH/$hostname.log
 # Defaults to LOGPATH/$hostname.log
 #
-# Contact: Maik Glatki <maik.glatki@gmail.com>
+# Author: Maik Glatki <maik@glatki.eu>
 
 use strict;
 use warnings;

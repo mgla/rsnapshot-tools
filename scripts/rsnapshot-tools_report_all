@@ -2,7 +2,7 @@
 # Collates log files created by rsnapshot-tools_report_all and sends it via E-Mail.
 # Uses local server configuration and the "mail" program.
 #
-# Contact: Maik Glatki <maik.glatki@gmail.com>
+# Author: Maik Glatki <maik@glatki.eu>
 
 use strict;
 use warnings;
