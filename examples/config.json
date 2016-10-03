@@ -2,5 +2,6 @@
 	"backup": [
 		"host1.example.org",
 		"host2.example.org"
-	]
+	],
+	"mail": "backupmail@example.com"
 }
